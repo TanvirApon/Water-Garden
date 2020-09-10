@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+              <img src="/static/fish/fish.jpg" class="d-block w-100" alt="...">
+          </div>
+        </div>
+      </div>
+      <div class="container my-2 ">
+        <h1 class="my-3 text-center"> Choose Your Fish </h1>
+        {%for i in range%}
+        <div class="row">
+          {%endfor%}
+          {%for i in Fish|slice:"1:"%}
+          <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+              <img src='/media/{{i.fish_image}}'  class="d-block w-100" alt="..."> 
+              <div class="card-body">
+                <h5 class ="card-title" id="namepr{{i.id}}">Name: {{i.fish_name}}</h5>
+                <p class="card-text">Price: {{i.fish_price}} tk/pcs</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                  <span id ="divpr{{i.id}}" class="divpr">
+                    <button id="pr{{i.id}}" class="btn btn-primary btn-lg active order">Add to Cart</button></span>
+                  </div>
+                   <div class="btn-group mx-2">
+                   <a href="/fishview/{{i.id}}"><button id ="qv{{i.id}}"class="btn btn-primary btn-lg active">View</button></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+           {%endfor%}
+
+             {% endblock body %}
+             
+{% block JavaScript %}
+      
+<script>     
+
+          if(localStorage.getItem('order')==null)
+          {
+          
+          var order ={};
+          
+          }
+          
+          else {
+          order=JSON.parse(localStorage.getItem('order'));
+          document.getElementById('order').innerHTML = Object.keys(order).length;
+      
+          }
+          //$('.order').click(function(){
+         $('.divpr').on('click','button.order',function(){
+          
+          var idstr = this.id.toString();
+          console.log(idstr);
+          
+          
+          if(order[idstr] != undefined){
+            qty=order[idstr][0] + 1;
+            name = "my item";    
+            order[idstr] = order[idstr][0] + 1;
+          }
+          
+          else
+          { 
+            qty= 1;
+            name = document.getElementById('name'+idstr).innerHTML;  
+          
+          order[idstr] = [qty,name];
+          
+          }
+          updatecart(order);
+          //localStorage.setItem('order',JSON.stringify(order));
+          });     
+               
+          
+         function updatecart(order)
+         { var sum= 0 ;
+
+         for(var k in order)
+          {
+            sum = sum + order[k][0];   
+          
+          document.getElementById('div' + k).innerHTML = "<button id='minus" + k + "' class='btn btn-primary minus'>-</button> <span id='val" + k + "''>" + order[k][0] + "</span> <button id='plus" + k + "' class='btn btn-primary plus'> + </button>";
+  
+  
+          } 
+
+          localStorage.setItem('order', JSON.stringify(order));
+          updatepopover(order);
+
+
+         }
+
+          $('#popcart').popover();  
+           updatepopover(order);
+
+
+          function updatepopover(order){
+           console.log("We are in side in the cart");
+           var popstr="";
+           popstr = popstr+"<h5>Selected Items are</h5><div class='mx-2 my-2'>";
+           var i = 1 ;
+           for(var item in order){
+             popstr = popstr + " <b>"+ i +"</b>. ";
+             popstr = popstr + document.getElementById('name'+item).innerHTML.slice(0,19)+"..Qty: "+ order[item][0]+ '<br>';
+             i= i+1;
+           }
+           popstr = popstr +"</div> <a href='/order'><button class='btn btn-primary' id=checkout> Checkout</button></a> <button class='btn btn-primary' id=clearcart onclick=clearcart()> ClearCart</button>";
+            console.log(popstr);
+          document.getElementById("popcart").setAttribute('data-content',popstr);
+           $('#popcart').popover('show');
+    
+         }
+
+         function clearcart()
+         {
+          order = JSON.parse(localStorage.getItem('order'));
+          for (var item in order)
+          {
+
+            document.getElementById('div'+item).innerHTML = '<button id="'+ item +'" class="btn btn-primary btn-lg active order">Add to Cart</button>';
+                          
+          }
+          localStorage.clear();
+          cart={};
+          updatecart(order);
+
+
+         }
+
+
+
+         $('.divpr').on("click","button.minus",function(){
+
+          console.log("minus clicked");
+          a = this.id.slice(7, );
+          console.log(a);
+          order['pr'+a][0]= order['pr'+a][0]-1;
+          order['pr'+a][0]=Math.max(0,order['pr'+a][0]);
+          document.getElementById('valpr'+a).innerHTML= order['pr'+a][0];
+          updatecart(order);
+    
+         });
+
+
+         $('.divpr').on("click","button.plus",function(){
+
+          console.log("plus click");
+          a = this.id.slice(6, );
+          console.log(a);
+          order['pr'+a][0]= order['pr'+a][0]+1;
+          document.getElementById('valpr'+a).innerHTML= order['pr'+a][0];
+          updatecart(order);
+    
+
+         });
+        </script>
+
+           {% endblock JavaScript %}      
+                    
+
+
+  

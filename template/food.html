@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+
+{% block body %}
+
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="/static/fish/medicine.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+    </div>
+
+    <div class="container my-2 ">
+      <h1 class="my-3 text-center"> Choose The Food</h1>
+    {%for i in range%}
+    <div class="row">
+      {%endfor%}
+
+      {%for i in Food|slice:"1:"%}
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+          <img src='/media/{{i.food_image}}'class="d-block w-100" alt="..."> 
+          <div class="card-body">
+            <h5 class ="card-title" id="namepr{{i.id}}">Name: {{i.food_name}}</h5>
+            <p class="card-text">Price: {{i.food_price}} tk</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+              <span id="divqr{{i.id}}" class="divqr">
+                <button class="btn btn-primary btn-lg active order" role="button" aria-pressed="true"  id="qr{{i.id}}">Add to cart</button>
+              </span></div>
+               <div class="btn-group mx-2">
+                 <a href="/foodview/{{i.id}}"><button id=ps{{i.id}} class="btn btn-primary btn-lg active">View</button></a> </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+
+            {% endblock body %}
+
+
+        
+      {% block JavaScript %}
+         <script>
+         
+          if(localStorage.getItem('order')==null)
+          {
+          
+          var order ={};
+          
+          }
+          
+          else {
+          
+          order = JSON.parse(localStorage.getItem('order'))
+          document.getElementById('order').innerHTML = Object.keys(order).length;
+          }
+          
+          $('.order').click(function(){
+          var idstr = this.id.toString();
+          console.log(idstr);
+          
+          
+          if(order[idstr] != undefined){
+          
+          order[idstr] = order[idstr] + 1;
+          }
+          
+          else
+          {
+          
+          order[idstr] = 1;
+          
+          }
+          updatecart(order); 
+          
+          localStorage.setItem('order',JSON.stringify(order));
+          });
+
+
+          function updatecart(order)
+         {
+
+         for(var k in order)
+          {    
+          
+          document.getElementById('div'+ k).innerHTML="<button id='minus" + k + "' class='btn btn-primary minus'>-</button> <span id ='val" + k + "''>" + order[k] + "</span><button id='plus" + k + "'class='btn btn-primary plus'>+</button>";
+          }
+          
+
+         }
+
+         $('.divqr').on("click","button.minus",function(){
+
+          console.log("minus clicked");
+          a = this.id.slice(7, );
+          console.log(a);
+          order['qr'+a]= order['qr'+a]-1;
+          order['qr'+a]=Math.max(0,order['qr'+a]);
+          document.getElementById('valqr'+a).innerHTML= order['qr'+a];
+          updatecart(order);
+          updatepopover(order);
+         }
+         );
+
+
+         $('.divqr').on("click","button.plus",function(){
+
+          console.log("plus click");
+          a = this.id.slice(6, );
+          console.log(a);
+          order['qr'+a]= order['qr'+a]+1;
+          document.getElementById('valqr'+a).innerHTML= order['qr'+a];
+          updatecart(order);
+
+         }
+         );
+
+         updatepopover(order);
+
+
+         $('#popcart').popover();
+
+
+          function updatepopover(order)
+         {
+           console.log("We are in side in the cart");
+           var popstr=" ";
+           popstr = popstr + "<h5> Selected Items are </h5><div class='mx-2 my-2'>";
+           var i = 1 ;
+           for(var item in order)
+           { 
+             popstr = popstr + "<b>"+ i +"</b>. ";
+             popstr = popstr + document.getElementById('name'+item).innerHTML.slice(0,19)+"Qty: "+ order[item]+ '<br>';
+             i= i+1;
+           }
+            popstr = popstr + "</div>";  
+          $('#popcart').popover('show');
+          document.getElementById("popcart").setAttribute('data-content',popstr);
+
+
+
+         }
+         
+
+          </script>
+          
+          
+          
+          
+           {% endblock JavaScript %}      
+                    
+
+
+
+
+
+    
+
+  

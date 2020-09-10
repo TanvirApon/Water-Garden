@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+          <img src="/static/aquarium/aquarium.jpg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+  </div>
+  <div class="container my-2 ">
+    <h1 class="my-3 text-center"> Choose Your Product</h1>
+  {%for i in range%}
+  <div class="row">
+    {%endfor%}
+    {%for i in Product|slice:"1:"%}
+    <div class="col-md-4">
+      <div class="card mb-4 shadow-sm">
+        <img src='/media/{{i.product_image}}' class="d-block w-100" alt="..."> 
+        <div class="card-body">
+          <h5 class ="card-title">Name: {{i.product_name}} </h5>
+          <p class="card-text"> Price:  {{i.product_price}} tk </p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+            <span id="divqs{{i.id}}" class="divqs">
+              <button class="btn btn-primary btn-lg active order" role="button" aria-pressed="true"  id="qs{{i.id}}">Add to Cart</button>
+            </div>
+             <div class="btn-group mx-2">
+          <a href="/products/{{i.id}}"><button id="qs{{i.id}}" class="btn btn-primary btn-lg active">View</button>
+          </a>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {%endfor%}
+
+     {% endblock body %}
+
+
+
+    {% block JavaScript %}
+      
+
+          <script>
+
+          updatecart(order);
+          
+          if(localStorage.getItem('order')==null)
+          {
+          
+          var order ={};
+          
+          }
+          
+          else {
+          
+          order = JSON.parse(localStorage.getItem('order'))
+          document.getElementById('order').innerHTML = Object.keys(order).length;
+          }
+          
+          $('.order').click(function(){
+          var idstr = this.id.toString();
+          console.log(idstr);
+          
+          
+          if(order[idstr] != undefined){
+          
+          order[idstr] = order[idstr] + 1;
+          }
+          
+          else
+          {
+          
+          order[idstr] = 1;
+          
+          }
+          
+          console.log(order);
+          localStorage.setItem('order',JSON.stringify(order))
+          });
+          
+          $('#popcart').popover();
+          document.getElementById("popcart").setAttribute('data-content',"<h5>Cart</h5>");
+           
+           function updatecart(order)
+         {
+
+         for(var k in order)
+          {    
+          
+          document.getElementById('div'+ k).innerHTML="<button id='minus" + k + "' class='btn btn-primary minus'>-</button> <span id ='val" + k + "''>" + order[k] + "</span><button id='plus" + k + "'class='btn btn-primary plus'>+</button>";
+          }
+          
+
+         }
+
+         $('.divqs').on("click","button.minus",function(){
+
+          console.log("minus clicked");
+          a = this.id.slice(7, );
+          console.log(a);
+          order['qs'+a]= order['qs'+a]-1;
+          order['qs'+a]=Math.max(0,order['qs'+a]);
+          document.getElementById('valqs'+a).innerHTML= order['qs'+a];
+          updatecart(order);
+         }
+         );
+
+
+         $('.divqs').on("click","button.plus",function(){
+
+          console.log("plus click");
+          a = this.id.slice(6, );
+          console.log(a);
+          order['qs'+a]= order['qs'+a]+1;
+          document.getElementById('valqs'+a).innerHTML= order['qs'+a];
+          updatecart(order);
+
+         }
+         );
+         
+
+
+
+
+
+
+
+
+          </script>
+          
+          
+          
+          
+           {% endblock JavaScript %}      
+                    
+
+
+
+
+  
+
+   
+
+
+
+
+    
+   

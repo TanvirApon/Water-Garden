@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block body %}
+
+<div class="container">
+<div class="row">
+ <div class="col-md-4 my-4">
+  <div class="row"> <img src="/media/{{fishview.fish_image}}">
+  </div>
+    </div>
+    <div class="col-md-8 my-4">
+    <h5>{{fishview.fish_name}}</h5>
+    <p>{{fishview.fish_desc}}</p> 
+    <div class ="row">
+    <div class="btn-group mx-1 ">
+    <a href="/order"><button class="btn btn-primary btn-lg ">Order</button></a>
+    </div>
+  <div class="btn-group mx-2">
+    <a href="/order"><button class="btn btn-primary btn-lg ">Add to Cart</button></a>
+    </div>
+    </div>
+
+    </div>
+    </div>
+    {% block JavaScript %}
+      
+
+          <script>
+          
+          if(localStorage.getItem('order')==null)
+          {
+          
+          var order ={};
+          
+          }
+          
+          else {
+          
+          order = JSON.parse(localStorage.getItem('order'))
+          document.getElementById('order').innerHTML = Object.keys(order).length;
+          }
+          
+          $('.order').click(function(){
+          var idstr = this.id.toString();
+          console.log(idstr);
+          
+          
+          if(order[idstr] != undefined){
+          
+          order[idstr] = order[idstr] + 1;
+          }
+          
+          else
+          {
+          
+          order[idstr] = 1;
+          
+          }
+          
+          console.log(order);
+          localStorage.setItem('order',JSON.stringify(order))
+          });
+          
+          $('#popcart').popover();
+          document.getElementById("popcart").setAttribute('data-content',"<h5>Cart</h5>");
+          
+          </script>
+          
+          
+          
+          
+           {% endblock JavaScript %}      
+                    
+
+
+
+
+{% endblock body %}
